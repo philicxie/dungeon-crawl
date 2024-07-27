@@ -41,6 +41,8 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let map_builder = MapBuilder::new(&mut rng);
         spawn_player(&mut ecs, map_builder.player_start);
+        map_builder.rooms.iter().skip(1).map(|r| r.center())
+            .for_each(|pos| spawn_monster(&mut ecs, &mut rng, pos));
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
         Self {
@@ -65,7 +67,7 @@ fn main() -> BError {
     let context = BTermBuilder::new()
         .with_title("Dungeon Crawler")
         .with_fps_cap(30.0)
-        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        .with_dimensions(DISPLAY_WIDTH * 4, DISPLAY_HEIGHT * 4)
         .with_resource_path("resources/")
         .with_font("dungeonfont.png", 32, 32)
         .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
