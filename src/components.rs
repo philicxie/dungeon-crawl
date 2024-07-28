@@ -14,3 +14,9 @@ pub struct Enemy;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct MovingRandomly;
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub struct WantsToMove {
+    pub entity: Entity,
+    pub destination: Point,
+}
