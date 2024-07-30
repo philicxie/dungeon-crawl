@@ -7,6 +7,7 @@ mod end_turn;
 mod movements;
 mod hud;
 mod tooltips;
+mod combat;
 
 use crate::prelude::*;
 
@@ -23,6 +24,8 @@ pub fn build_input_scheduler() -> Schedule {
 
 pub fn build_player_scheduler() -> Schedule {
     Schedule::builder()
+        .add_system(combat::combat_system())
+        .flush()
         .add_system(movements::movement_system())
         .flush()
         .add_system(collision::collisions_system())
@@ -37,6 +40,8 @@ pub fn build_player_scheduler() -> Schedule {
 pub fn build_monster_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(random_move::random_move_system())
+        .flush()
+        .add_system(combat::combat_system())
         .flush()
         .add_system(movements::movement_system())
         .flush()
