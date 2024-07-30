@@ -3,12 +3,12 @@ use crate::prelude::*;
 #[system]
 #[read_component(Point)]
 #[read_component(Player)]
+#[read_component(Enemy)]
+#[write_component(Health)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
-    #[resource] map: &Map,
     #[resource] key: &Option<VirtualKeyCode>,
-    #[resource] camera: &mut Camera,
     #[resource] turn_state: &mut TurnState
     ) {
     let mut players = <(Entity, &Point)>::query()
@@ -28,6 +28,7 @@ pub fn player_input(
             .unwrap();
 
         let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
+        let mut did_sth = false;
         if delta != Point::zero() {
             let mut hit_something = false;
             enemies
@@ -37,17 +38,26 @@ pub fn player_input(
                 })
                 .for_each(|(entity, _)| {
                     hit_something = true;
+                    did_sth = true;
                     commands.push(((), WantsToAttack{
                         attacker: player_entity, victim: *entity,
                     }));
                 });
             if !hit_something {
+                did_sth = true;
                 commands.push(((), WantsToMove {
                     entity: player_entity, destination,
                 }));
             }
         }
+        if !did_sth {
+            if let Ok(mut health) = ecs
+                .entry_mut(player_entity)
+                .unwrap()
+                .get_component_mut::<Health>() {
+                health.current = i32::min(health.max, health.current + 1);
+            }
+        }
         *turn_state = TurnState::PlayerTurn;
-        
     }
 }
