@@ -40,7 +40,7 @@ pub fn player_input(
                     hit_something = true;
                     did_sth = true;
                     commands.push(((), WantsToAttack{
-                        attacker: player_entity, victim: *entity,
+                        attacker: player_entity, victim: *entity, name: 0
                     }));
                 });
             if !hit_something {

@@ -34,6 +34,7 @@ pub struct Name(pub String);
 pub struct WantsToAttack {
     pub attacker: Entity,
     pub victim: Entity,
+    pub name: i32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
