@@ -14,7 +14,6 @@ pub fn end_turn(ecs: &SubWorld, #[resource] turn_state: &mut TurnState) {
         _ => current_state,
     };
     player_hp.iter(ecs).for_each(|hp| {
-        println!("player health: {}", hp.current);
         if hp.current <= 1 {
             new_state = TurnState::GameOver;
         }
