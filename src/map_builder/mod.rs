@@ -1,9 +1,11 @@
 mod empty;
 mod rooms;
 mod automata;
+mod prefab;
 
 use crate::map_builder::automata::CellularAutomataArchitect;
 use crate::map_builder::empty::EmptyArchitect;
+use crate::map_builder::prefab::apply_prefab;
 use crate::map_builder::rooms::RoomsArchitect;
 use crate::prelude::*;
 
@@ -24,7 +26,9 @@ pub struct MapBuilder {
 impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         let mut architect = CellularAutomataArchitect{};
-        architect.new(rng)
+        let mut mb = architect.new(rng);
+        apply_prefab(&mut mb, rng);
+        mb
     }
 
     fn fill(&mut self, tile : TileType) {
