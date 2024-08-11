@@ -6,6 +6,7 @@ use crate::prelude::*;
 pub fn map_render(
     #[resource] map: &Map,
     #[resource] camera: &Camera,
+    #[resource] theme: &Box<dyn MapTheme>,
     ecs: &SubWorld
 ) {
     let mut fov = <&FieldOfView>::query().filter(component::<Player>());
@@ -28,23 +29,25 @@ pub fn map_render(
                 };
                 match map.tiles[idx] {
                     TileType::Floor => {
+                        let glyph = theme.tile_to_render(map.tiles[idx]);
                         draw_batch.set(
                             pt - offset,
                             ColorPair::new(
                                 tint, // (3)
                                 BLACK
                             ),
-                            to_cp437('.')
+                            glyph
                         );
                     }
                     TileType::Wall => {
+                        let glyph = theme.tile_to_render(map.tiles[idx]);
                         draw_batch.set(
                             pt - offset,
                             ColorPair::new(
                                 tint,
                                 BLACK
                             ),
-                            to_cp437('#')
+                            glyph
                         );
                     }
                 }

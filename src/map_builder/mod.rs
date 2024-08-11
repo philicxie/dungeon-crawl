@@ -3,12 +3,14 @@ mod rooms;
 mod automata;
 mod prefab;
 mod drunkard;
+mod themes;
 
 use crate::map_builder::automata::CellularAutomataArchitect;
 use crate::map_builder::drunkard::DrunkardsWalkArchitect;
 use crate::map_builder::empty::EmptyArchitect;
 use crate::map_builder::prefab::apply_prefab;
 use crate::map_builder::rooms::RoomsArchitect;
+use crate::map_builder::themes::{DungeonTheme, ForestTheme};
 use crate::prelude::*;
 
 const NUM_ROOMS: usize = 20;
@@ -22,14 +24,23 @@ pub struct MapBuilder {
     pub rooms : Vec<Rect>,
     pub monster_spawns: Vec<Point>,
     pub player_start : Point,
-    pub amulet_start : Point
+    pub amulet_start : Point,
+    pub theme: Box<dyn MapTheme>,
 }
 
 impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        let mut architect = DrunkardsWalkArchitect{};
+        let mut architect: Box<dyn MapArchitect> = match rng.range(0,3) {
+            0 => Box::new(DrunkardsWalkArchitect{}),
+            1 => Box::new(RoomsArchitect{}),
+            _ => Box::new(CellularAutomataArchitect{})
+        };
         let mut mb = architect.new(rng);
         apply_prefab(&mut mb, rng);
+        mb.theme = match rng.range(0, 3) {
+            0 => DungeonTheme::new(),
+            _ => ForestTheme::new(),
+        };
         mb
     }
 
@@ -139,4 +150,8 @@ impl MapBuilder {
             }
         }
     }
+}
+
+pub trait MapTheme: Sync + Send {
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
 }
