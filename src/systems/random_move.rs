@@ -24,7 +24,7 @@ pub fn random_move(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             .filter(|(_, target_pos, _)| **target_pos == destination)
             .for_each(|(victim, _, _)| {
                 if ecs.entry_ref(*victim).unwrap().get_component::<Player>().is_ok() {
-                    commands.push(((), WantsToAttack{ attacker: *entity, victim: *victim, name: 233 }));
+                    commands.push(((), WantsToAttack{ attacker: *entity, victim: *victim }));
                 }
                 attacked = true;
             });
