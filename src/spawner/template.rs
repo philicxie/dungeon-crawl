@@ -13,7 +13,8 @@ pub struct Template {// (5)
     pub name : String,
     pub glyph : char,
     pub provides : Option<Vec<(String, i32)>>,// (8)
-    pub hp : Option<i32>
+    pub hp : Option<i32>,
+    pub base_damage: Option<i32>,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq)]// (9)
@@ -99,6 +100,13 @@ impl Templates {
                     }
                 }
             });
+        }
+
+        if let Some(damage) = &template.base_damage {
+            commands.add_component(entity, Damage(*damage));
+            if template.entity_type == EntityType::Item {
+                commands.add_component(entity, Weapon{});
+            }
         }
     }
 }
